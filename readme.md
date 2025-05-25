@@ -1,132 +1,209 @@
-# SOCKS5 一键安装脚本
+# SOCKS5代理一键安装脚本
 
-## 📋 项目简介
+基于Dante Server的SOCKS5代理一键安装脚本，支持CentOS/Debian/Ubuntu/Alpine。
 
-支持多种Linux系统的SOCKS5代理服务器一键安装脚本，2025年版本，基于3proxy构建。
-
-## 🎯 支持系统
-
-- **CentOS** (7.x / 8.x / 9.x)
-- **Ubuntu** (18.04 / 20.04 / 22.04 / 24.04)
-- **Debian** (9 / 10 / 11 / 12)
-- **Alpine Linux** (3.x)
-
-## 🚀 一键安装
-
-### 方法1: 在线安装 (推荐)
+## 一键安装
 
 ```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/Cd1s/install_socks5/refs/heads/main/install_socks5.sh)
+wget https://raw.githubusercontent.com/Cd1s/install_socks5/main/socks5_dante.sh && chmod +x socks5_dante.sh && ./socks5_dante.sh
 ```
 
-### 方法2: 手动安装
+## 功能
+
+- 安装/卸载 SOCKS5代理
+- 用户名密码认证
+- 查看服务状态
+- 自动防火墙配置
+
+## 使用说明
+
+运行脚本后会显示交互式菜单：
+
+```
+================================
+    SOCKS5代理管理脚本
+    基于Dante Server
+================================
+
+1. 安装SOCKS5代理
+2. 卸载SOCKS5代理
+3. 查看运行状态
+0. 退出脚本
+
+请选择操作 [0-3]:
+```
+
+### 安装选项
+
+1. **端口设置**：默认1080，可自定义
+2. **认证方式**：
+   - 无认证：任何人都可以使用
+   - 用户名密码认证：更安全的访问控制
+
+### 配置示例
+
+**无认证配置：**
+- 端口：1080
+- 认证：无需认证
+- 使用：直接连接IP:1080
+
+**用户认证配置：**
+- 端口：1080
+- 用户名：user123
+- 密码：pass456
+- 使用：连接时输入用户名密码
+
+## 服务管理
+
+### SystemD系统（CentOS/Debian/Ubuntu）
 
 ```bash
-wget https://raw.githubusercontent.com/Cd1s/install_socks5/refs/heads/main/socks5_install.sh
+# 启动服务
+systemctl start sockd
 
-chmod +x socks5_install.sh
-sudo ./socks5_install.sh
+# 停止服务
+systemctl stop sockd
+
+# 重启服务
+systemctl restart sockd
+
+# 查看状态
+systemctl status sockd
+
+# 开机自启
+systemctl enable sockd
+
+# 禁用自启
+systemctl disable sockd
 ```
 
-## 📱 安装过程
-
-运行脚本后会出现交互式菜单：
-
-1. **选择操作** - 选择"1. 安装 SOCKS5 代理"
-2. **设置用户名** - 默认为 `admin`，可自定义
-3. **设置密码** - 输入强密码（必填）
-4. **设置端口** - 默认为 `1080`，可自定义
-5. **确认配置** - 检查设置是否正确
-6. **自动安装** - 脚本自动完成所有配置
-
-## 🔧 功能特性
-
-- ✅ **多系统支持** - 自动检测系统类型
-- ✅ **一键安装** - 无需手动编译配置
-- ✅ **安全认证** - 用户名密码保护
-- ✅ **防火墙配置** - 自动开放端口
-- ✅ **系统服务** - systemd 集成，支持开机自启
-- ✅ **日志记录** - 详细的访问日志
-- ✅ **完整卸载** - 一键清理所有文件
-
-## 🛠 服务管理
-
-安装完成后，可使用以下命令管理服务：
+### OpenRC系统（Alpine Linux）
 
 ```bash
-# 查看服务状态
-systemctl status 3proxy
+# 启动服务
+rc-service sockd start
 
-# 启动/停止/重启服务
-systemctl start 3proxy
-systemctl stop 3proxy
-systemctl restart 3proxy
+# 停止服务
+rc-service sockd stop
 
-# 查看日志
-journalctl -u 3proxy -f
-tail -f /var/log/3proxy/3proxy.log
+# 重启服务
+rc-service sockd restart
+
+# 查看状态
+rc-service sockd status
+
+# 开机自启
+rc-update add sockd default
+
+# 禁用自启
+rc-update del sockd default
 ```
 
-## 🔗 客户端配置
+## 配置文件
 
-安装完成后会显示连接信息：
+- **配置文件位置**：`/etc/sockd.conf`
+- **服务名称**：`sockd`
 
-```
-服务器IP: YOUR_SERVER_IP
-端口: 1080
-用户名: admin
-密码: YOUR_PASSWORD
-协议: SOCKS5
-```
+## 客户端连接
 
-### 常用客户端
+### 浏览器设置
 
-- **Windows**: Proxifier, SocksCap64
-- **macOS**: ClashX, Surge
-- **Android**: Postern, Drony
-- **iOS**: Surge, Shadowrocket
+1. 打开浏览器代理设置
+2. 选择SOCKS代理
+3. 地址：服务器IP
+4. 端口：设置的端口（默认1080）
+5. 类型：SOCKS5
+6. 如有认证，输入用户名密码
 
-## 🗑️ 卸载服务
-
-如需完全卸载SOCKS5服务，运行主脚本选择卸载：
+### 命令行测试
 
 ```bash
-sudo ./socks5_install.sh
-# 然后选择 "2. 卸载 SOCKS5 代理"
+# 测试连接（无认证）
+curl --socks5 服务器IP:端口 http://ipinfo.io
+
+# 测试连接（用户认证）
+curl --socks5 用户名:密码@服务器IP:端口 http://ipinfo.io
 ```
 
-## 🐛 常见问题
+## 防火墙配置
 
-### 1. 安装失败
-- 确保有root权限
-- 检查网络连接
-- 确认系统支持
+脚本会自动配置防火墙规则，支持：
 
-### 2. 无法连接
-- 检查防火墙设置
-- 确认服务状态: `systemctl status 3proxy`
-- 查看日志: `journalctl -u 3proxy`
+- **UFW**（Ubuntu默认）
+- **firewalld**（CentOS默认）
+- **iptables**（通用）
 
-### 3. 端口被占用
-脚本会自动检测端口冲突，选择其他可用端口即可。
+手动配置示例：
 
-## 📞 支持
+```bash
+# UFW
+ufw allow 1080/tcp
 
-如有问题，请提供：
-1. 系统版本: `cat /etc/os-release`
-2. 错误信息: `journalctl -u 3proxy -n 20`
-3. 服务状态: `systemctl status 3proxy`
+# firewalld
+firewall-cmd --permanent --add-port=1080/tcp
+firewall-cmd --reload
 
-## ⚠️ 免责声明
+# iptables
+iptables -I INPUT -p tcp --dport 1080 -j ACCEPT
+```
 
-本脚本仅供学习和合法用途，用户需遵守当地法律法规。
+## 故障排除
 
-## 📄 许可证
+### 常见问题
 
-MIT License - 详见 [LICENSE](LICENSE) 文件
+1. **服务启动失败**
+   ```bash
+   # 查看详细错误
+   journalctl -u sockd -f
+   ```
+
+2. **端口被占用**
+   ```bash
+   # 检查端口占用
+   netstat -tlnp | grep :1080
+   ```
+
+3. **防火墙问题**
+   ```bash
+   # 临时关闭防火墙测试
+   systemctl stop firewalld  # CentOS
+   ufw disable              # Ubuntu
+   ```
+
+4. **权限问题**
+   ```bash
+   # 确保以root权限运行
+   sudo ./dante_socks5.sh
+   ```
+
+### 日志查看
+
+```bash
+# 系统日志
+tail -f /var/log/syslog | grep sockd
+
+# SystemD日志
+journalctl -u sockd -f
+
+# 手动测试
+sockd -D -f /etc/sockd.conf
+```
+
+## 安全建议
+
+1. **使用强密码**：如果启用认证，请使用复杂密码
+2. **限制访问**：考虑使用防火墙限制访问来源
+3. **定期更新**：保持系统和软件包更新
+4. **监控流量**：定期检查代理使用情况
+
+## 许可证
+
+MIT License
+
+## 贡献
+
+欢迎提交Issues和Pull Requests来改进这个脚本。
 
 ---
 
-**版本**: v1.0.0  
-**更新**: 2025-05-25  
-**支持**: CentOS/Ubuntu/Debian/Alpine
+**注意**：此脚本仅供学习和合法用途使用，请遵守当地法律法规。
