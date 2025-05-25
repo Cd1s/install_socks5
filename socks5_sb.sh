@@ -234,6 +234,22 @@ EOF
 create_openrc_service() {
     print_info "Creating OpenRC service..."
     
+    # Fix Alpine Linux specific issues
+    if [[ "$OS" == *"Alpine"* ]]; then
+        # Ensure required directories exist
+        mkdir -p /var/run /var/log /tmp
+        
+        # Install required packages for Alpine
+        apk add --no-cache openrc coreutils
+        
+        # Enable OpenRC
+        if [ ! -f /run/openrc/softlevel ]; then
+            openrc sysinit
+            openrc boot
+            openrc default
+        fi
+    fi
+    
     cat > "/etc/init.d/${SERVICE_NAME}" << 'EOF'
 #!/sbin/openrc-run
 
@@ -241,22 +257,60 @@ name="sing-box"
 description="sing-box proxy server"
 command="/usr/local/bin/sing-box"
 command_args="run -c /etc/sing-box/config.json"
-command_user="root"
-pidfile="/var/run/${name}.pid"
 command_background="yes"
+pidfile="/tmp/sing-box.pid"
+start_stop_daemon_args="--make-pidfile"
 
 depend() {
     need net
-    after firewall
+    use logger
 }
 
 start_pre() {
-    checkpath --directory --owner root:root --mode 0755 /var/run
+    # Ensure config file exists
+    if [ ! -f "/etc/sing-box/config.json" ]; then
+        eerror "Configuration file not found: /etc/sing-box/config.json"
+        return 1
+    fi
+    
+    # Create required directories
+    mkdir -p /tmp /var/log
+    
+    # Test configuration
+    ${command} check -c /etc/sing-box/config.json >/dev/null 2>&1
+    if [ $? -ne 0 ]; then
+        eerror "Configuration validation failed"
+        return 1
+    fi
+}
+
+start() {
+    ebegin "Starting $name"
+    start-stop-daemon --start --background --make-pidfile \
+        --pidfile "$pidfile" --exec "$command" -- $command_args
+    eend $?
+}
+
+stop() {
+    ebegin "Stopping $name"
+    start-stop-daemon --stop --pidfile "$pidfile"
+    eend $?
+}
+
+reload() {
+    ebegin "Reloading $name"
+    if [ -f "$pidfile" ]; then
+        kill -HUP $(cat $pidfile)
+    fi
+    eend $?
 }
 EOF
 
     chmod +x "/etc/init.d/${SERVICE_NAME}"
+    
+    # Add service to default runlevel
     rc-update add "$SERVICE_NAME" default
+    
     print_success "OpenRC service created and enabled"
 }
 
