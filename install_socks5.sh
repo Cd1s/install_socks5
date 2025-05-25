@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # SOCKS5 一键安装脚本 - GitHub版本
-# 使用方法: curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/install_socks5.sh | bash
+# 使用方法: bash <(curl -fsSL https://raw.githubusercontent.com/Cd1s/install_socks5/main/install_socks5.sh)
 
 set -e
 
@@ -12,8 +12,8 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-# GitHub仓库信息 (请修改为您的仓库地址)
-GITHUB_RAW_URL="https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main"
+# GitHub仓库信息
+GITHUB_RAW_URL="https://raw.githubusercontent.com/Cd1s/install_socks5/main"
 
 echo -e "${BLUE}"
 cat << "EOF"
@@ -31,7 +31,7 @@ echo -e "${NC}"
 # 检查root权限
 if [[ $EUID -ne 0 ]]; then
     echo -e "${RED}错误: 需要root权限运行此脚本${NC}"
-    echo "请使用: sudo bash <(curl -fsSL ${GITHUB_RAW_URL}/install_socks5.sh)"
+    echo "請使用: sudo bash <(curl -fsSL ${GITHUB_RAW_URL}/install_socks5.sh)"
     exit 1
 fi
 
