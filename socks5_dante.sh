@@ -75,11 +75,11 @@ create_config() {
     echo "$user:$pass" | chpasswd
     
     # 创建配置目录
-    mkdir -p /var/log/danted
+    mkdir -p /var/log/sockd
     
     # 生成配置文件
-    cat > /etc/danted.conf << EOF
-logoutput: /var/log/danted/danted.log
+    cat > /etc/sockd.conf << EOF
+logoutput: /var/log/sockd/sockd.log
 internal: 0.0.0.0 port = $port
 external: $interface
 socksmethod: username
@@ -105,37 +105,28 @@ EOF
 # 启动服务
 start_service() {
     if [[ $OS == "alpine" ]]; then
-        # Alpine OpenRC
-        cat > /etc/init.d/danted << 'EOF'
-#!/sbin/openrc-run
-name="danted"
-command="/usr/sbin/danted"
-command_args="-f /etc/danted.conf -P /var/run/danted.pid"
-pidfile="/var/run/danted.pid"
-depend() { need net; }
-EOF
-        chmod +x /etc/init.d/danted
-        rc-update add danted default
-        rc-service danted start
+        # Alpine 使用系统自带的 sockd 服务
+        rc-update add sockd default
+        rc-service sockd start
     else
         # SystemD
-        cat > /etc/systemd/system/danted.service << EOF
+        cat > /etc/systemd/system/sockd.service << EOF
 [Unit]
 Description=Dante SOCKS5 Server
 After=network.target
 
 [Service]
 Type=forking
-PIDFile=/var/run/danted.pid
-ExecStart=/usr/sbin/danted -f /etc/danted.conf -P /var/run/danted.pid
+PIDFile=/var/run/sockd.pid
+ExecStart=/usr/sbin/sockd -f /etc/sockd.conf -P /var/run/sockd.pid
 Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
 EOF
         systemctl daemon-reload
-        systemctl enable danted
-        systemctl start danted
+        systemctl enable sockd
+        systemctl start sockd
     fi
 }
 
@@ -201,19 +192,18 @@ uninstall_socks5() {
     
     # 停止服务
     if [[ $OS == "alpine" ]]; then
-        rc-service danted stop 2>/dev/null || true
-        rc-update del danted default 2>/dev/null || true
-        rm -f /etc/init.d/danted
+        rc-service sockd stop 2>/dev/null || true
+        rc-update del sockd default 2>/dev/null || true
     else
-        systemctl stop danted 2>/dev/null || true
-        systemctl disable danted 2>/dev/null || true
-        rm -f /etc/systemd/system/danted.service
+        systemctl stop sockd 2>/dev/null || true
+        systemctl disable sockd 2>/dev/null || true
+        rm -f /etc/systemd/system/sockd.service
         systemctl daemon-reload
     fi
     
     # 删除配置文件
-    rm -f /etc/danted.conf
-    rm -rf /var/log/danted
+    rm -f /etc/sockd.conf
+    rm -rf /var/log/sockd
     
     # 卸载软件包
     case $PKG_MANAGER in
@@ -232,9 +222,9 @@ show_status() {
     echo -e "${BLUE}======= 服务状态 =======${NC}"
     
     if [[ $OS == "alpine" ]]; then
-        rc-service danted status
+        rc-service sockd status
     else
-        systemctl status danted
+        systemctl status sockd
     fi
 }
 
