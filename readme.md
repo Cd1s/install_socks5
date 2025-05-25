@@ -34,7 +34,7 @@
 
 ```bash
 # 下载脚本
-wget -O install_socks5.sh https://raw.githubusercontent.com/yourusername/yourrepo/main/install_socks5.sh
+wget -O [install_socks5.sh https://raw.githubusercontent.com/Cd1s/install_socks5/refs/heads/main/socks5_dante.sh
 
 # 添加执行权限
 chmod +x install_socks5.sh
@@ -65,7 +65,7 @@ sudo ./install_socks5.sh info
 ### 方法三：一行命令安装
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/yourusername/yourrepo/main/install_socks5.sh | sudo bash -s install
+curl -fsSL https://raw.githubusercontent.com/Cd1s/install_socks5/refs/heads/main/socks5_dante.sh | sudo bash -s install
 ```
 
 ## 使用说明
