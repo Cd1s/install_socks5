@@ -34,7 +34,7 @@
 
 ```bash
 # 下载脚本
-wget -O [install_socks5.sh https://raw.githubusercontent.com/Cd1s/install_socks5/refs/heads/main/socks5_dante.sh
+wget -O install_socks5.sh https://raw.githubusercontent.com/Cd1s/install_socks5/refs/heads/main/socks5_dante.sh
 
 # 添加执行权限
 chmod +x install_socks5.sh
