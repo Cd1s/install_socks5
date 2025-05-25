@@ -5,7 +5,7 @@
 ## 一键安装
 
 ```bash
-wget https://raw.githubusercontent.com/Cd1s/install_socks5/main/socks5_dante.sh && chmod +x socks5_dante.sh && ./socks5_dante.sh
+wget https://raw.githubusercontent.com/Cd1s/install_socks5/refs/heads/main/socks5_dante.sh && chmod +x socks5_dante.sh && ./socks5_dante.sh
 ```
 
 ## 功能
