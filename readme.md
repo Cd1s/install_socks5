@@ -1,209 +1,258 @@
-# SOCKS5代理一键安装脚本
+# SOCKS5 Proxy Server Installer
 
-基于Dante Server的SOCKS5代理一键安装脚本，支持CentOS/Debian/Ubuntu/Alpine。
+一个基于 sing-box 的 SOCKS5 代理服务器一键安装脚本，支持多种 Linux 发行版。
 
-## 一键安装
+## 特性
+
+- 🚀 **一键安装**: 简单快速的安装过程
+- 🔐 **用户认证**: 支持用户名密码认证（可选）
+- 🔧 **端口自定义**: 可以自定义监听端口
+- 🗑️ **完整卸载**: 支持完全卸载和清理
+- 🔄 **开机自启**: 自动配置系统服务开机启动
+- 📊 **状态监控**: 实时查看服务状态和连接信息
+- 🌍 **多系统支持**: 支持主流 Linux 发行版
+
+## 支持的操作系统
+
+- ✅ **CentOS** 7/8/9
+- ✅ **RHEL** (Red Hat Enterprise Linux)
+- ✅ **Rocky Linux**
+- ✅ **AlmaLinux**
+- ✅ **Debian** 9/10/11/12
+- ✅ **Ubuntu** 18.04/20.04/22.04/24.04
+- ✅ **Alpine Linux** 3.x
+
+## 系统要求
+
+- Root 权限
+- 网络连接（用于下载 sing-box）
+- 基本系统工具（curl, wget, tar, unzip）
+
+## 快速开始
+
+### 方法一：交互式安装
 
 ```bash
-wget https://raw.githubusercontent.com/Cd1s/install_socks5/refs/heads/main/socks5_dante.sh && chmod +x socks5_dante.sh && ./socks5_dante.sh
+# 下载脚本
+wget -O install_socks5.sh https://raw.githubusercontent.com/yourusername/yourrepo/main/install_socks5.sh
+
+# 添加执行权限
+chmod +x install_socks5.sh
+
+# 运行脚本（交互式菜单）
+sudo ./install_socks5.sh
 ```
 
-## 功能
+### 方法二：命令行安装
 
-- 安装/卸载 SOCKS5代理
-- 用户名密码认证
-- 查看服务状态
-- 自动防火墙配置
+```bash
+# 直接安装
+sudo ./install_socks5.sh install
+
+# 卸载
+sudo ./install_socks5.sh uninstall
+
+# 查看状态
+sudo ./install_socks5.sh status
+
+# 重启服务
+sudo ./install_socks5.sh restart
+
+# 显示连接信息
+sudo ./install_socks5.sh info
+```
+
+### 方法三：一行命令安装
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/yourusername/yourrepo/main/install_socks5.sh | sudo bash -s install
+```
 
 ## 使用说明
 
-运行脚本后会显示交互式菜单：
+### 安装过程
 
-```
-================================
-    SOCKS5代理管理脚本
-    基于Dante Server
-================================
+1. 运行脚本后选择 "1. Install SOCKS5 Proxy"
+2. 设置监听端口（默认：1080）
+3. 选择是否启用用户认证
+4. 如果启用认证，输入用户名和密码
+5. 脚本会自动完成安装和配置
 
-1. 安装SOCKS5代理
-2. 卸载SOCKS5代理
-3. 查看运行状态
-0. 退出脚本
+### 配置文件
 
-请选择操作 [0-3]:
-```
+- **配置目录**: `/etc/sing-box/`
+- **配置文件**: `/etc/sing-box/config.json`
+- **二进制文件**: `/usr/local/bin/sing-box`
+- **服务名称**: `sing-box`
 
-### 安装选项
-
-1. **端口设置**：默认1080，可自定义
-2. **认证方式**：
-   - 无认证：任何人都可以使用
-   - 用户名密码认证：更安全的访问控制
-
-### 配置示例
-
-**无认证配置：**
-- 端口：1080
-- 认证：无需认证
-- 使用：直接连接IP:1080
-
-**用户认证配置：**
-- 端口：1080
-- 用户名：user123
-- 密码：pass456
-- 使用：连接时输入用户名密码
-
-## 服务管理
-
-### SystemD系统（CentOS/Debian/Ubuntu）
+### 服务管理
 
 ```bash
 # 启动服务
-systemctl start sockd
+sudo systemctl start sing-box      # systemd 系统
+sudo rc-service sing-box start     # Alpine (OpenRC)
 
 # 停止服务
-systemctl stop sockd
+sudo systemctl stop sing-box       # systemd 系统
+sudo rc-service sing-box stop      # Alpine (OpenRC)
 
 # 重启服务
-systemctl restart sockd
+sudo systemctl restart sing-box    # systemd 系统
+sudo rc-service sing-box restart   # Alpine (OpenRC)
 
 # 查看状态
-systemctl status sockd
+sudo systemctl status sing-box     # systemd 系统
+sudo rc-service sing-box status    # Alpine (OpenRC)
 
-# 开机自启
-systemctl enable sockd
-
-# 禁用自启
-systemctl disable sockd
+# 查看日志
+sudo journalctl -u sing-box -f     # systemd 系统
+sudo tail -f /var/log/messages      # Alpine
 ```
 
-### OpenRC系统（Alpine Linux）
+## 客户端配置
+
+### 无认证配置
+
+```
+类型: SOCKS5
+服务器: YOUR_SERVER_IP
+端口: 1080
+用户名: (留空)
+密码: (留空)
+```
+
+### 带认证配置
+
+```
+类型: SOCKS5
+服务器: YOUR_SERVER_IP
+端口: 1080
+用户名: your_username
+密码: your_password
+```
+
+### 连接 URL 格式
 
 ```bash
-# 启动服务
-rc-service sockd start
+# 无认证
+socks5://YOUR_SERVER_IP:1080
 
-# 停止服务
-rc-service sockd stop
-
-# 重启服务
-rc-service sockd restart
-
-# 查看状态
-rc-service sockd status
-
-# 开机自启
-rc-update add sockd default
-
-# 禁用自启
-rc-update del sockd default
+# 带认证
+socks5://username:password@YOUR_SERVER_IP:1080
 ```
 
-## 配置文件
+## 测试连接
 
-- **配置文件位置**：`/etc/sockd.conf`
-- **服务名称**：`sockd`
-
-## 客户端连接
-
-### 浏览器设置
-
-1. 打开浏览器代理设置
-2. 选择SOCKS代理
-3. 地址：服务器IP
-4. 端口：设置的端口（默认1080）
-5. 类型：SOCKS5
-6. 如有认证，输入用户名密码
-
-### 命令行测试
+### 使用 curl 测试
 
 ```bash
-# 测试连接（无认证）
-curl --socks5 服务器IP:端口 http://ipinfo.io
+# 无认证
+curl --proxy socks5://YOUR_SERVER_IP:1080 https://ipinfo.io/ip
 
-# 测试连接（用户认证）
-curl --socks5 用户名:密码@服务器IP:端口 http://ipinfo.io
+# 带认证
+curl --proxy socks5://username:password@YOUR_SERVER_IP:1080 https://ipinfo.io/ip
 ```
+
+### 使用 Python 测试
+
+```python
+import requests
+
+# 设置代理
+proxies = {
+    'http': 'socks5://username:password@YOUR_SERVER_IP:1080',
+    'https': 'socks5://username:password@YOUR_SERVER_IP:1080'
+}
+
+# 测试连接
+response = requests.get('https://ipinfo.io/ip', proxies=proxies)
+print(f"Your IP through proxy: {response.text.strip()}")
+```
+
+## 常见问题
+
+### Q: 安装失败，提示权限不足
+A: 请确保使用 root 权限运行脚本：`sudo ./install_socks5.sh`
+
+### Q: 无法连接到代理服务器
+A: 检查以下几点：
+- 防火墙是否开放了相应端口
+- 服务是否正常运行：`sudo systemctl status sing-box`
+- 配置文件是否正确：`cat /etc/sing-box/config.json`
+
+### Q: 如何修改端口或认证信息？
+A: 重新运行安装脚本，选择重新安装即可修改配置
+
+### Q: 如何完全卸载？
+A: 运行 `sudo ./install_socks5.sh uninstall` 或在菜单中选择卸载选项
+
+### Q: Alpine Linux 下服务无法启动
+A: 确保已安装 OpenRC：`apk add openrc`
 
 ## 防火墙配置
 
-脚本会自动配置防火墙规则，支持：
-
-- **UFW**（Ubuntu默认）
-- **firewalld**（CentOS默认）
-- **iptables**（通用）
-
-手动配置示例：
+### CentOS/RHEL (firewalld)
 
 ```bash
-# UFW
-ufw allow 1080/tcp
-
-# firewalld
-firewall-cmd --permanent --add-port=1080/tcp
-firewall-cmd --reload
-
-# iptables
-iptables -I INPUT -p tcp --dport 1080 -j ACCEPT
+# 开放端口
+sudo firewall-cmd --permanent --add-port=1080/tcp
+sudo firewall-cmd --reload
 ```
 
-## 故障排除
-
-### 常见问题
-
-1. **服务启动失败**
-   ```bash
-   # 查看详细错误
-   journalctl -u sockd -f
-   ```
-
-2. **端口被占用**
-   ```bash
-   # 检查端口占用
-   netstat -tlnp | grep :1080
-   ```
-
-3. **防火墙问题**
-   ```bash
-   # 临时关闭防火墙测试
-   systemctl stop firewalld  # CentOS
-   ufw disable              # Ubuntu
-   ```
-
-4. **权限问题**
-   ```bash
-   # 确保以root权限运行
-   sudo ./dante_socks5.sh
-   ```
-
-### 日志查看
+### Ubuntu/Debian (ufw)
 
 ```bash
-# 系统日志
-tail -f /var/log/syslog | grep sockd
+# 开放端口
+sudo ufw allow 1080/tcp
+```
 
-# SystemD日志
-journalctl -u sockd -f
+### iptables
 
-# 手动测试
-sockd -D -f /etc/sockd.conf
+```bash
+# 开放端口
+sudo iptables -A INPUT -p tcp --dport 1080 -j ACCEPT
 ```
 
 ## 安全建议
 
-1. **使用强密码**：如果启用认证，请使用复杂密码
-2. **限制访问**：考虑使用防火墙限制访问来源
-3. **定期更新**：保持系统和软件包更新
-4. **监控流量**：定期检查代理使用情况
+1. **修改默认端口**: 不要使用默认的 1080 端口
+2. **启用认证**: 强烈建议启用用户名密码认证
+3. **强密码**: 使用复杂的密码
+4. **防火墙配置**: 只允许需要的 IP 访问
+5. **定期更新**: 定期更新 sing-box 到最新版本
+
+## 目录结构
+
+```
+/etc/sing-box/
+├── config.json              # 主配置文件
+
+/usr/local/bin/
+├── sing-box                  # sing-box 二进制文件
+
+/etc/systemd/system/          # systemd 系统
+├── sing-box.service          # 服务文件
+
+/etc/init.d/                  # OpenRC 系统 (Alpine)
+├── sing-box                  # 服务脚本
+```
+
+## 技术支持
+
+如果您遇到问题，请：
+
+1. 检查服务状态：`sudo ./install_socks5.sh status`
+2. 查看日志：`sudo journalctl -u sing-box -f`
+3. 验证配置：`cat /etc/sing-box/config.json`
 
 ## 许可证
 
-MIT License
+本项目基于 MIT 许可证开源。
 
-## 贡献
+## 更新日志
 
-欢迎提交Issues和Pull Requests来改进这个脚本。
-
----
-
-**注意**：此脚本仅供学习和合法用途使用，请遵守当地法律法规。
+### v1.0.0
+- 初始版本发布
+- 支持 CentOS, Debian, Ubuntu, Alpine
+- 支持用户认证和端口自定义
+- 支持开机自启和服务管理
