@@ -16,17 +16,14 @@
 ### 方法1: 在线安装 (推荐)
 
 ```bash
-# 一键安装命令
 bash <(curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/install_socks5.sh)
 ```
 
 ### 方法2: 手动安装
 
 ```bash
-# 1. 下载脚本
 wget https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/socks5_install.sh
 
-# 2. 运行安装
 chmod +x socks5_install.sh
 sudo ./socks5_install.sh
 ```
