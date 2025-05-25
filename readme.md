@@ -34,38 +34,38 @@
 
 ```bash
 # 下载脚本
-wget -O install_socks5.sh https://raw.githubusercontent.com/Cd1s/install_socks5/refs/heads/main/socks5_dante.sh
+wget -O install_socks5_sb.sh https://raw.githubusercontent.com/Cd1s/install_socks5/refs/heads/main/socks5_sb.sh
 
 # 添加执行权限
-chmod +x install_socks5.sh
+chmod +x install_sb.sh
 
 # 运行脚本（交互式菜单）
-sudo ./install_socks5.sh
+sudo ./install_sb.sh
 ```
 
 ### 方法二：命令行安装
 
 ```bash
 # 直接安装
-sudo ./install_socks5.sh install
+sudo ./install_sb.sh install
 
 # 卸载
-sudo ./install_socks5.sh uninstall
+sudo ./install_sb.sh uninstall
 
 # 查看状态
-sudo ./install_socks5.sh status
+sudo ./install_sb.sh status
 
 # 重启服务
-sudo ./install_socks5.sh restart
+sudo ./install_sb.sh restart
 
 # 显示连接信息
-sudo ./install_socks5.sh info
+sudo ./install_sb.sh info
 ```
 
 ### 方法三：一行命令安装
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Cd1s/install_socks5/refs/heads/main/socks5_dante.sh | sudo bash -s install
+curl -fsSL https://raw.githubusercontent.com/Cd1s/install_socks5/refs/heads/main/socks5_sb.sh | sudo bash -s install
 ```
 
 ## 使用说明
